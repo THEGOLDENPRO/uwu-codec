@@ -1,0 +1,18 @@
+[package]
+name = "uwu_codec"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "uwu_codec"
+path = "src/lib.rs"
+
+[[bin]]
+name = "uwu-codec"
+path = "src/bin.rs"
+
+[dependencies]
+oem_cp = "2"
+maplit = "1.0.2"
