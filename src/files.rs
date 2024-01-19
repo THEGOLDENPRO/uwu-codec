@@ -1,6 +1,8 @@
-use std::{path::Path, fs, error::Error, process::Command};
+use std::{path::Path, fs, error::Error, process::Command, env::var};
 
 use uwu_codec::{uwu_bytes::UwUBytes, uwu_encode, uwu_decode};
+
+const TEMP_DIR: &str = "/uwu-codec";
 
 fn file_contents_to_uwu_bytes(file_contents: String) -> UwUBytes {
     let mut contents_lines = file_contents.lines();
@@ -25,6 +27,22 @@ fn file_contents_to_uwu_bytes(file_contents: String) -> UwUBytes {
 
 fn uwu_bytes_to_file_contents(uwu_bytes: &UwUBytes) -> String {
     format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().unwrap_or("none".into())) + &uwu_bytes.bytes.join(",")
+}
+
+pub fn get_path(target_file: Option<&str>) -> String {
+    let target_file = target_file.unwrap_or("".into()).to_owned();
+
+    if cfg!(target_os = "windows") {
+        var("AppData").expect("Failed to find Windows AppData environment variable!") + &(TEMP_DIR.to_owned() + &target_file).replace("/", r"\")
+    } else { // If you want MacOS support, contribute please.
+        var("HOME").expect("Failed to find HOME environment variable! Are you on Linux?") + "/.cache" + &TEMP_DIR + &target_file
+    }
+}
+
+pub fn check_dir() {
+    if !(fs::metadata(get_path(None)).is_ok()) {
+        fs::create_dir(get_path(None)).expect("Couldn't create temporary directory.");
+    }
 }
 
 pub fn convert_file<'a>(target_file: &'a Path, output_file: &'a Path) -> Result<(), Box<dyn Error>> {
@@ -73,7 +91,7 @@ pub fn open_file(target_file: &Path) -> Result<(), Box<dyn Error>> {
         "Target file type is unknown, so we can not open the file!"
     );
 
-    let output_file_path = format!("./temp.{}", uwu_bytes_file_type);
+    let output_file_path = get_path(Some(&format!("/owo.{}", uwu_bytes_file_type)));
     let output_file = Path::new(&output_file_path);
 
     let contents = uwu_decode(&target_file_uwu_bytes).unwrap();

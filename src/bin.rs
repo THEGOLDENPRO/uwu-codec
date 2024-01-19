@@ -1,6 +1,6 @@
-use std::{env, path::Path};
+use std::{env, path::Path, fs};
 
-use crate::files::{convert_file, open_file};
+use crate::files::{convert_file, open_file, check_dir, get_path};
 
 mod files;
 
@@ -15,6 +15,7 @@ Options:
 Flags:
     --help: Shows this message.
     --version: Shows current version.
+    --clear-cache: Clears uwu-codec's cache.
 ";
 
 fn main() {
@@ -22,6 +23,8 @@ fn main() {
 
     let binding = "--help".to_owned();
     let option = cmd_args.get(0).unwrap_or(&binding);
+
+    check_dir();
 
     if (option == "-convert" || option == "-c") && cmd_args.len() >= 3 {
         let target_file = Path::new(&cmd_args[1]);
@@ -44,6 +47,17 @@ fn main() {
 
     if option == "--version" {
         println!("Version: v{}", VERSION);
+        return;
+    }
+
+    if option == "--clear-cache" {
+        let path = get_path(None);
+
+        match fs::remove_dir_all(path) {
+            Ok(()) => println!("Cleared cache successfully!"),
+            Err(e) => println!("Failed to clear cache. Error: {}", e)
+        };
+
         return;
     }
 
