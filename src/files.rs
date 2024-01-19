@@ -8,17 +8,23 @@ fn file_contents_to_uwu_bytes(file_contents: String) -> UwUBytes {
     let metadata = contents_lines.next().expect("File contains nothing!");
     let uwu_bytes = contents_lines.next().expect("UwU bytes not found in file contents!");
 
+    let mut file_type = Some(metadata.split("[").nth(1).expect("Failed to phrase uwu-codec version from file metadata!").split("]").nth(0).unwrap().to_string());
+
+    if file_type == Some("none".into()) {
+        file_type = None;
+    }
+
     UwUBytes::from(
-    metadata.split("(").nth(1).expect("Failed to phrase uwu codec file metadata!").split(")").nth(0).unwrap().parse::<u8>().expect(
-    "Failed to phrase uwu codec version from metadata!"
-    ),
-    uwu_bytes.to_string().split(",").map(|x| x.to_string()).collect(),
-    Some(metadata.split("[").nth(1).expect("Failed to phrase uwu-codec version from file metadata!").split("]").nth(0).unwrap().to_string())
+        metadata.split("(").nth(1).expect("Failed to phrase uwu codec file metadata!").split(")").nth(0).unwrap().parse::<u8>().expect(
+        "Failed to phrase uwu codec version from metadata!"
+        ),
+        uwu_bytes.to_string().split(",").map(|x| x.to_string()).collect(),
+        file_type
     )
 }
 
 fn uwu_bytes_to_file_contents(uwu_bytes: &UwUBytes) -> String {
-    format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().expect("Huh? File type doesn't exists!")) + &uwu_bytes.bytes.join(",")
+    format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().unwrap_or("none".into())) + &uwu_bytes.bytes.join(",")
 }
 
 pub fn convert_file<'a>(target_file: &'a Path, output_file: &'a Path) -> Result<(), Box<dyn Error>> {
@@ -27,7 +33,16 @@ pub fn convert_file<'a>(target_file: &'a Path, output_file: &'a Path) -> Result<
 
     let target_file_uwu_bytes = match target_file_extension {
         Some("uwu") | Some("owo") => file_contents_to_uwu_bytes(fs::read_to_string(target_file).unwrap()),
-        _ => uwu_encode(&fs::read(target_file).expect("Error occurred while reading target file!"), 2).unwrap()
+        file_type => {
+            let mut uwu_bytes = match uwu_encode(
+                &fs::read(target_file).expect("Error occurred while reading target file!"), 2
+            ) {
+                Ok(value) => value,
+                Err(e) => return Err(e)
+            };
+            uwu_bytes.file_type = Some(file_type.unwrap().to_string());
+            uwu_bytes
+        }
     };
 
     match output_file_extension {
