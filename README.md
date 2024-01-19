@@ -1,6 +1,6 @@
 <div align="center">
 
-  # 😳 uwu-codec (.uwu & .owo)
+  # 😳 uwu-codec (.uwu/.owo)
 
   <sub>Imagine one SINGLE file extension FOR EVERY PIECE OF MEDIA but ENCODED IN UWU BYTES!!!!!!</sub>
 
@@ -27,8 +27,9 @@ uwu-codec [options] {target_file}
 > ```
 Check out the help command for more: ``uwu-codec --help``
 
-### The codec also supports double clicking on files!
-[[Preview Video]](./assets/uwu_codec_preview.mp4)
+### The codec also supports double-clicking on files!
+
+[[Preview Video]](https://github.com/THEGOLDENPRO/uwu-codec/assets/66202304/1fb31651-448a-403e-a4a6-1ffb8f6b2e0a)
 
 To set it up, just set .uwu or .owo files to open with the uwu-codec binary located at ``~/.cargo/bin``.
 
