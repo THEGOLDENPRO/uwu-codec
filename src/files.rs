@@ -1,6 +1,6 @@
 use std::{path::Path, fs, error::Error, process::Command, env::var};
 
-use uwu_codec::{uwu_bytes::UwUBytes, uwu_encode, uwu_decode};
+use uwu_codec::{uwu_bytes::UwUBytes, uwu_encode, uwu_decode, multimedia::image_viewer::open_image};
 
 const TEMP_DIR: &str = "/uwu-codec";
 
@@ -27,6 +27,36 @@ fn file_contents_to_uwu_bytes(file_contents: String) -> UwUBytes {
 
 fn uwu_bytes_to_file_contents(uwu_bytes: &UwUBytes) -> String {
     format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().unwrap_or("none".into())) + &uwu_bytes.bytes.join(",")
+}
+
+fn open_unknown_file(file_type: &str, uwu_bytes: &UwUBytes) -> Result<(), Box<dyn Error>> {
+    let output_file_path = get_path(Some(&format!("/owo.{}", file_type)));
+    let output_file = Path::new(&output_file_path);
+
+    let contents = match uwu_decode(uwu_bytes) {
+        Ok(value) => value,
+        Err(e) => return Err(format!("Failed to decode uwu bytes for unknown file contents! Error: {}", e).into())
+    };
+
+    fs::write(&output_file, contents).expect(
+        "Failed to decode to output file!"
+    );
+
+    // actually opening it...
+    let process = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .arg("/c")
+            .arg(output_file)
+            .spawn()
+    } else { // If you want MacOS support, contribute please.
+        Command::new("xdg-open")
+            .arg(output_file)
+            .spawn()
+    };
+
+    process.expect("Failed to open file!");
+
+    Ok(())
 }
 
 pub fn get_path(target_file: Option<&str>) -> String {
@@ -91,27 +121,8 @@ pub fn open_file(target_file: &Path) -> Result<(), Box<dyn Error>> {
         "Target file type is unknown, so we can not open the file!"
     );
 
-    let output_file_path = get_path(Some(&format!("/owo.{}", uwu_bytes_file_type)));
-    let output_file = Path::new(&output_file_path);
-
-    let contents = uwu_decode(&target_file_uwu_bytes).unwrap();
-    fs::write(&output_file, contents).expect(
-        "Failed to decode to output file!"
-    );
-
-    // actually opening it...
-    let process = if cfg!(target_os = "windows") {
-        Command::new("cmd")
-            .arg("/c")
-            .arg(output_file)
-            .spawn()
-    } else { // If you want MacOS support, contribute please.
-        Command::new("xdg-open")
-            .arg(output_file)
-            .spawn()
-    };
-
-    process.expect("Failed to open file!");
-
-    Ok(())
+    match uwu_bytes_file_type.as_str() {
+        "png"|"jpeg"|"gif"|"svg" => open_image(&target_file_uwu_bytes),
+        _ => open_unknown_file(&uwu_bytes_file_type, &target_file_uwu_bytes)
+    }
 }

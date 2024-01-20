@@ -3,8 +3,9 @@ use std::error::Error;
 use oem_cp::{decode_string_complete_table, code_table::{DECODING_TABLE_CP437, ENCODING_TABLE_CP437}, encode_string_checked};
 use uwu_bytes::UwUBytes;
 
-mod codecs;
+pub mod codecs;
 pub mod uwu_bytes;
+pub mod multimedia;
 
 /// Encodes bytes to 😳 uwu bytes.
 pub fn uwu_encode(bytes: &Vec<u8>, version: u8) -> Result<UwUBytes, Box<dyn Error>> {

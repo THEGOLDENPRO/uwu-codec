@@ -3,8 +3,8 @@ use std::error::Error;
 
 use maplit::hashmap;
 
-fn get_table() -> HashMap<&'static str, &'static str> {
-    hashmap! {
+fn get_table() -> HashMap<u8, String> {
+    let mapping  = hashmap! {
         "0" => "OwO",
         "1" => "ôwô",
         "2" => "W",
@@ -15,7 +15,21 @@ fn get_table() -> HashMap<&'static str, &'static str> {
         "7" => "(〃￣ω￣〃)ゞ",
         "8" => "UwU",
         "9" => "( ੭•͈ω•͈)੭"
+    };
+
+    let mut table: HashMap<u8, String> = HashMap::new();
+
+    for num in 0..256 {
+        let mut uwu_byte = String::new();
+
+        for char in num.to_string().chars() {
+            uwu_byte.push_str(mapping.get(char.to_string().as_str()).unwrap());
+        }
+
+        table.insert(num as u8, uwu_byte);
     }
+
+    table
 }
 
 pub fn encode(bytes: &Vec<u8>) -> Result<Vec<String>, Box<dyn Error>> {
@@ -25,24 +39,16 @@ pub fn encode(bytes: &Vec<u8>) -> Result<Vec<String>, Box<dyn Error>> {
 
     for byte in bytes.iter() {
 
-        let mut uwu_byte = String::new();
+        let uwu_byte = match owo_table.get(byte) {
+            None => {
+                return Err(
+                    format!("Opposiey dasiy, the byte '{}' failed to encode into an uwu byte!", byte).into()
+                )
+            },
+            Some(uwu_byte) => uwu_byte
+        };
 
-        for char in byte.to_string().chars() {
-
-            let uwu_char = match owo_table.get(char.to_string().as_str()) {
-                None => {
-                    return Err(
-                        format!("Opposiey dasiy, the character '{}' failed to encode to an uwu byte!", char).into()
-                    )
-                },
-                uwu_char => uwu_char.unwrap()
-            };
-
-            uwu_byte.extend(uwu_char.chars());
-
-        }
-
-        uwu_bytes.push(uwu_byte);
+        uwu_bytes.push(uwu_byte.to_owned());
 
     }
 
@@ -50,16 +56,20 @@ pub fn encode(bytes: &Vec<u8>) -> Result<Vec<String>, Box<dyn Error>> {
 }
 
 pub fn decode(uwu_bytes: &Vec<String>) -> Result<Vec<u8>, Box<dyn Error>> { // If this stuff fails, I don't care not my problem.
-    let owo_table: HashMap<&str, &str> = get_table();
+    let owo_table = get_table();
+    let owo_table = owo_table.iter().map(|(k, v)| (v, k)).collect::<HashMap<&String, &u8>>();
 
     let mut bytes: Vec<u8> = Vec::new();
 
     for uwu_byte in uwu_bytes {
         let mut uwu_byte_transcoded = uwu_byte.to_string();
 
-        for owo_char in owo_table.iter() {
-            uwu_byte_transcoded = uwu_byte_transcoded.replace(owo_char.1, owo_char.0);
-        }
+        let owo_char = match owo_table.get(&uwu_byte) {
+            Some(value) => value,
+            None => return Err(format!("Could not decode uwu byte '{}' with uwu-codec v2!", uwu_byte).into())
+        };
+
+        uwu_byte_transcoded = uwu_byte_transcoded.replace(uwu_byte, owo_char.to_string().as_str());
 
         let uwu_byte_phrased = uwu_byte_transcoded.parse::<u8>();
 
