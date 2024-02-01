@@ -14,15 +14,11 @@ impl eframe::App for UwUImageViewer<'_> {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
         egui::CentralPanel::default().show(ctx, |ui| {
-
             egui::ScrollArea::both().show(ui, |ui| {
-
                 ui.add(
                     self.image.clone().unwrap().rounding(10.0),
                 );
-
             });
-
         });
     }
 }
