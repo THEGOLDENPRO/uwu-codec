@@ -40,8 +40,7 @@ pub fn open_image(uwu_bytes: &UwUBytes) -> Result<(), Box<dyn Error>> {
         "UwU Image Viewer", 
         options, 
         Box::new(|cc| {
-            // This gives us image support:
-            egui_extras::install_image_loaders(&cc.egui_ctx);
+            egui_extras::install_image_loaders(&cc.egui_ctx); // This gives us image support.
             let mut jeff = Box::<UwUImageViewer>::default();
 
             jeff.image = Some(image);
