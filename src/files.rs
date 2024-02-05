@@ -122,7 +122,8 @@ pub fn open_file(target_file: &Path) -> Result<(), Box<dyn Error>> {
     );
 
     match uwu_bytes_file_type.as_str() {
-        "png"|"jpeg"|"gif"|"svg" => open_image(&target_file_uwu_bytes),
-        _ => open_unknown_file(&uwu_bytes_file_type, &target_file_uwu_bytes)
+        "png"|"jpeg"|"jpg"|"gif"|"svg" => open_image(&target_file_uwu_bytes), 
+        // TODO: Work on video player.
+        other => Err(format!("The '{}' file type is not supported yet!", other).into())
     }
 }

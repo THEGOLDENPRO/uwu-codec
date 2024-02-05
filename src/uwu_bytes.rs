@@ -17,3 +17,9 @@ impl UwUBytes {
         uwu_decode(&self).unwrap()
     }
 }
+
+pub struct BigUwUBytes {
+    pub version: u8,
+    pub uwu_bytes: Vec<UwUBytes>,
+    pub file_type: Option<String>
+}
