@@ -1,7 +1,6 @@
 use std::{env, path::Path, fs};
 
 use uwu_codec::{uwu_bytes::UwUBytes, uwu_decode_string, uwu_encode_string};
-
 use crate::files::{convert_file, open_file, check_dir, get_path};
 
 mod files;

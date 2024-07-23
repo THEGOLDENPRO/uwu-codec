@@ -29,6 +29,7 @@ fn uwu_bytes_to_file_contents(uwu_bytes: &UwUBytes) -> String {
     format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().unwrap_or("none".into())) + &uwu_bytes.bytes.join(",")
 }
 
+/*
 fn open_unknown_file(file_type: &str, uwu_bytes: &UwUBytes) -> Result<(), Box<dyn Error>> {
     let output_file_path = get_path(Some(&format!("/owo.{}", file_type)));
     let output_file = Path::new(&output_file_path);
@@ -58,6 +59,7 @@ fn open_unknown_file(file_type: &str, uwu_bytes: &UwUBytes) -> Result<(), Box<dy
 
     Ok(())
 }
+ */
 
 pub fn get_path(target_file: Option<&str>) -> String {
     let target_file = target_file.unwrap_or("".into()).to_owned();

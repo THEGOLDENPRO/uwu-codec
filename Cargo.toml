@@ -18,3 +18,4 @@ oem_cp = "2"
 maplit = "1.0.2"
 eframe = "0.25.0"
 egui_extras = { version = "0.25.0", features = ["image"] }
+colored = "2.1.0"
