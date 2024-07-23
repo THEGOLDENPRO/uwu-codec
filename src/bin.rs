@@ -1,5 +1,7 @@
 use std::{env, path::Path, fs};
 
+use uwu_codec::{uwu_bytes::UwUBytes, uwu_decode_string, uwu_encode_string};
+
 use crate::files::{convert_file, open_file, check_dir, get_path};
 
 mod files;
@@ -10,7 +12,9 @@ const HELP_MSG: &str = "
 USAGE: uwu-codec [options] {target_file}
 
 Options:
-    -c or -convert: Takes a target and output file argument and encodes the target file to the output file. E.g. uwu-codec -c apple.png apple.uwu
+    -rs: Takes in a normal string and outputs it as raw uwu bytes.
+    -ru: Takes in a string of raw uwu bytes separated by commas and outputs it as a normal string.
+    -c: Takes a target and output file argument and encodes the target file to the output file. E.g. uwu-codec -c apple.png apple.uwu
 
 Flags:
     --help: Shows this message.
@@ -26,7 +30,40 @@ fn main() {
 
     check_dir();
 
-    if (option == "-convert" || option == "-c") && cmd_args.len() >= 3 {
+    if (option == "-rs") && cmd_args.len() >= 2 {
+        let normal_string = &cmd_args[1];
+
+        match uwu_encode_string(normal_string, 2) {
+            Ok(uwu_bytes) => {
+                println!("{}", uwu_bytes.bytes.join(","));
+            },
+            Err(e) => {
+                println!("An error occurred while encoding! Error: {}", e);
+            }
+        };
+
+        return;
+    }
+
+    if (option == "-ru") && cmd_args.len() >= 2 {
+        let raw_uwu_bytes = &cmd_args[1];
+        let raw_uwu_bytes_array: Vec<String> = raw_uwu_bytes.split(",").filter_map(|s| Some(s.to_string())).collect();
+
+        let uwu_bytes = UwUBytes::from(2, raw_uwu_bytes_array, None);
+
+        match uwu_decode_string(&uwu_bytes) {
+            Ok(normal_string) => {
+                println!("{}", normal_string);
+            }
+            Err(e) => {
+                println!("An error occurred while decoding! Error: {}", e);
+            }
+        };
+
+        return;
+    }
+
+    if (option == "-c") && cmd_args.len() >= 3 {
         let target_file = Path::new(&cmd_args[1]);
         let output_file = Path::new(&cmd_args[2]);
 
