@@ -45,7 +45,7 @@ pub fn open_image(uwu_bytes: &UwUBytes) -> Result<(), Box<dyn Error>> {
 
             jeff.image = Some(image);
 
-            jeff
+            Ok(jeff)
         }),
     );
 
