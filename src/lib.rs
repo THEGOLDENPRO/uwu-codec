@@ -6,6 +6,7 @@ use uwu_bytes::UwUBytes;
 pub mod codecs;
 pub mod uwu_bytes;
 pub mod multimedia;
+pub mod utils;
 
 /// Encodes bytes to 😳 uwu bytes.
 pub fn uwu_encode(bytes: &Vec<u8>, version: u8) -> Result<UwUBytes, Box<dyn Error>> {

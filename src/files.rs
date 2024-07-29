@@ -1,32 +1,26 @@
-use std::{path::Path, fs, error::Error, process::Command, env::var};
+use std::{path::Path, fs, error::Error, env::var};
 
-use uwu_codec::{uwu_bytes::UwUBytes, uwu_encode, uwu_decode, multimedia::image_viewer::open_image};
+use uwu_codec::{multimedia::image_viewer::open_image, utils, uwu_bytes::UwUBytes, uwu_decode, uwu_encode};
 
 const TEMP_DIR: &str = "/uwu-codec";
 
 fn file_contents_to_uwu_bytes(file_contents: String) -> UwUBytes {
     let mut contents_lines = file_contents.lines();
 
-    let metadata = contents_lines.next().expect("File contains nothing!");
+    let metadata = contents_lines.next().expect("File contains nothing!").to_string();
     let uwu_bytes = contents_lines.next().expect("UwU bytes not found in file contents!");
 
-    let mut file_type = Some(metadata.split("[").nth(1).expect("Failed to phrase uwu-codec version from file metadata!").split("]").nth(0).unwrap().to_string());
-
-    if file_type == Some("none".into()) {
-        file_type = None;
-    }
+    let (version, file_type) = utils::parse_metadata_string(&metadata);
 
     UwUBytes::from(
-        metadata.split("(").nth(1).expect("Failed to phrase uwu codec file metadata!").split(")").nth(0).unwrap().parse::<u8>().expect(
-        "Failed to phrase uwu codec version from metadata!"
-        ),
+        version,
         uwu_bytes.to_string().split(",").map(|x| x.to_string()).collect(),
         file_type
     )
 }
 
 fn uwu_bytes_to_file_contents(uwu_bytes: &UwUBytes) -> String {
-    format!("uwu-codec ({}) [{}]\n", uwu_bytes.version, uwu_bytes.file_type.clone().unwrap_or("none".into())) + &uwu_bytes.bytes.join(",")
+    utils::uwu_bytes_to_metadata_string(uwu_bytes) + "\n" + utils::uwu_bytes_to_separated_string(uwu_bytes, ",").as_str()
 }
 
 /*

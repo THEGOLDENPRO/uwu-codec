@@ -1,5 +1,6 @@
-use std::{env, path::Path, fs};
+use std::{env, error::Error, fs, path::Path};
 
+use colored::*;
 use uwu_codec::{uwu_bytes::UwUBytes, uwu_decode_string, uwu_encode_string};
 use crate::files::{convert_file, open_file, check_dir, get_path};
 
@@ -37,7 +38,7 @@ fn main() {
                 println!("{}", uwu_bytes.bytes.join(","));
             },
             Err(e) => {
-                println!("An error occurred while encoding! Error: {}", e);
+                print_error("An error occurred while encoding that string!", e);
             }
         };
 
@@ -55,7 +56,7 @@ fn main() {
                 println!("{}", normal_string);
             }
             Err(e) => {
-                println!("An error occurred while decoding! Error: {}", e);
+                print_error("An error occurred while decoding those uwu bytes!", e);
             }
         };
 
@@ -66,11 +67,15 @@ fn main() {
         let target_file = Path::new(&cmd_args[1]);
         let output_file = Path::new(&cmd_args[2]);
 
-        println!("Converting {:?} to {:?}...", target_file, output_file);
+        println!(
+            "Converting '{}' to '{}'...", 
+            target_file.to_str().unwrap().blue(), 
+            output_file.to_str().unwrap().blue()
+        );
 
         match convert_file(target_file, output_file) {
-            Ok(_) => println!("Converted successfully!"),
-            Err(e) => println!("An error occurred while converting! Error: {}", e),
+            Ok(_) => println!("{}", "Converted successfully!".bright_green().bold()),
+            Err(e) => print_error("An error occurred while converting!", e)
         }
 
         return;
@@ -90,8 +95,8 @@ fn main() {
         let path = get_path(None);
 
         match fs::remove_dir_all(path) {
-            Ok(()) => println!("Cleared cache successfully!"),
-            Err(e) => println!("Failed to clear cache. Error: {}", e)
+            Ok(()) => println!("{}", "Cleared cache successfully!".cyan().bold()),
+            Err(e) => print_error("Failed to clear cache.", Box::new(e))
         };
 
         return;
@@ -101,19 +106,22 @@ fn main() {
         let file = Path::new(&cmd_args[0]);
 
         if file.exists() {
-            println!("Opening {:?}...", file);
+            println!("Opening '{}'...", file.to_str().unwrap().blue());
 
             match open_file(Path::new(&cmd_args[0])) {
-                Ok(_) => println!("Opened successfully!"),
-                Err(e) => println!("An error occurred while opening that. Error: {}", e),
+                Ok(_) => println!("{}", "Opened successfully!".bright_green().bold()),
+                Err(e) => print_error("An error occurred while opening that.", e),
             }
 
             return;
         }
 
-        println!("The file {:?} doesn't exist!", file);
+        println!("The file '{:?}' doesn't exist!", file.to_str().unwrap().blue());
     }
 
     println!("{}", HELP_MSG);
+}
 
+fn print_error(msg: &str, error: Box<dyn Error>) {
+    println!("{} {}: {}", msg.red(), "Error".bright_white().bold(), error);
 }
