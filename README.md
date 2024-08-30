@@ -9,8 +9,11 @@
 </div>
 
 > [!Note]
-> 
-> Work in progress, expect many bugs. (feel free to contribute and report bugs)
+> Still a Work in progress, expect many many bugs. (feel free to contribute and report bugs)
+
+> [!Warning]
+> This iteration of uwu-codec currently **only supports** opening PNG images.
+> I changed **ALOT** of the codebase after recording the first youtube video, so you cannot open videos atm despite the video; you have to convert them to an uwu file then convert it back if you would like to play a video.
 
 ## Usage 🖱️
 ```sh
