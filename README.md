@@ -4,7 +4,9 @@
 
   <sub>Imagine one SINGLE file extension FOR EVERY PIECE OF MEDIA but ENCODED IN UWU BYTES!!!!!!</sub>
 
-  {insert image}
+  [![thumbnail](https://github.com/user-attachments/assets/5b3655c5-56dd-404b-93c3-8225f8b87d95)](https://youtu.be/f-Whvbco14I)
+
+  ^ Cick to watch my youtube video on this! ^
 
 </div>
 
