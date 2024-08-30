@@ -39,7 +39,7 @@ To set it up, just set .uwu or .owo files to open with the uwu-codec binary loca
 <img src="./assets/binary_preview.png" width="600px">
 
 ## Installation 🛠️
-I don't plan on releasing to any package managers yet, so for now you have one options, install from source (like a real man).
+I don't plan on releasing to any package managers yet, so for now you have one option, install from source (like a real man).
 
 > [!Warning]
 > On Linux if the ``uwu-codec`` command doesn't work you may need to add the ``~/.cargo/bin`` directory to your path if you . You can do so by adding ``export PATH=$PATH:~/.cargo/bin`` to your ``.bashrc`` or an equivalent.
